@@ -46,7 +46,7 @@ public class NoteService {
         note = repo.save(note);
 
         // publish to Kafka → AI enrichment service consumes this
-        publishEvent("NOTE_CREATED", note);
+//        publishEvent("NOTE_CREATED", note);
 //
         log.info("Note created id={} category={}", note.getId(), note.getCategory());
 
@@ -81,7 +81,7 @@ public class NoteService {
 
         // no repo.save() needed — Hibernate dirty checking handles it
 
-        publishEvent("NOTE_UPDATED", note);
+//        publishEvent("NOTE_UPDATED", note);
         log.info("Note updated id={}", id);
         return toResponse(note);
     }
@@ -105,7 +105,7 @@ public class NoteService {
     public void delete(String id){
         Note note=findOrThrow(id);
         repo.delete(note);
-        publishEvent("NOTE_DELETED", note);
+//        publishEvent("NOTE_DELETED", note);
         log.info("Note deleted id={}", id);
     }
 
@@ -127,33 +127,33 @@ public class NoteService {
         return repo.findById(id).orElseThrow(()->new NoteNotFoundException((id)));
     }
 
-    public void publishEvent(String eventType,Note note){
-        NoteEvent event = NoteEvent.builder()
-                .eventType(eventType)
-                .noteId(note.getId())
-                .title(note.getTitle())
-                .content(note.getContent())
-                .category(note.getCategory())
-                .tags(note.getTags())
-                .correlationId(UUID.randomUUID().toString()) // unique per event
-                .build();
-
-        CompletableFuture<SendResult<String, NoteEvent>> future =
-                kafkaTemplate.send("note-events", note.getId(), event);
-
-        future.whenComplete((result, ex) -> {
-            if (ex != null) {
-                log.error("Failed to publish {} for noteId={}",
-                        eventType, note.getId(), ex);
-            } else {
-                log.info("Published {} noteId={} partition={} offset={}",
-                        eventType,
-                        note.getId(),
-                        result.getRecordMetadata().partition(),
-                        result.getRecordMetadata().offset());
-            }
-        });
-    }
+//    public void publishEvent(String eventType,Note note){
+//        NoteEvent event = NoteEvent.builder()
+//                .eventType(eventType)
+//                .noteId(note.getId())
+//                .title(note.getTitle())
+//                .content(note.getContent())
+//                .category(note.getCategory())
+//                .tags(note.getTags())
+//                .correlationId(UUID.randomUUID().toString()) // unique per event
+//                .build();
+//
+//        CompletableFuture<SendResult<String, NoteEvent>> future =
+//                kafkaTemplate.send("note-events", note.getId(), event);
+//
+//        future.whenComplete((result, ex) -> {
+//            if (ex != null) {
+//                log.error("Failed to publish {} for noteId={}",
+//                        eventType, note.getId(), ex);
+//            } else {
+//                log.info("Published {} noteId={} partition={} offset={}",
+//                        eventType,
+//                        note.getId(),
+//                        result.getRecordMetadata().partition(),
+//                        result.getRecordMetadata().offset());
+//            }
+//        });
+//    }
 
 }
 

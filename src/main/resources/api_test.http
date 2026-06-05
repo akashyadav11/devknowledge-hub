@@ -1,0 +1,59 @@
+-- ═══════════════════════════════════════════════════════
+-- knowledge-service.http  (IntelliJ HTTP Client)
+-- Place in project root — Run requests with the green arrow
+-- ═══════════════════════════════════════════════════════
+
+@baseUrl = http://localhost:8081/api/v1
+
+### Create a note
+POST {{baseUrl}}/notes
+Content-Type: application/json
+
+ {
+   "title": "Kafka Consumer Groups",
+   "content": "A consumer group allows multiple consumers to share a topic.",
+   "category": "kafka",
+  "tags": ["kafka", "messaging"]
+ }
+
+### Get all notes
+GET {{baseUrl}}/notes
+
+### Get note by ID  (paste a real ID after running create)
+GET {{baseUrl}}/notes/PASTE-ID-HERE
+
+### Get by category
+GET {{baseUrl}}/notes/category/kafka
+
+### Search
+GET {{baseUrl}}/notes/search?q=consumer&page=0&size=5
+
+### Update a note
+PUT {{baseUrl}}/notes/PASTE-ID-HERE
+Content-Type: application/json
+
+ {
+  "title": "Kafka Consumer Groups — updated",
+   "content": "Updated content here.",
+ "category": "kafka",
+   "tags": ["kafka", "messaging", "updated"]
+ }
+
+### Delete a note
+DELETE {{baseUrl}}/notes/PASTE-ID-HERE
+
+### Health check
+GET http://localhost:8081/actuator/health
+
+ ── Validation error test ─────────────────────────────
+### Should return 400 — title is blank
+POST {{baseUrl}}/notes
+Content-Type: application/json
+
+ {
+   "title": "",
+   "content": "Some content"
+ }
+
+### Should return 404 — ID does not exist
+GET {{baseUrl}}/notes/non-existent-id
